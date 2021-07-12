@@ -1355,7 +1355,7 @@
                             }
                         ],
                         "graphql": {
-                            "query": "query ($ref: String!) { productCatalogue(ref: $ref) { ref name status description type attributes{name type value} ...categories  } standardProducts(catalogue:{ref:$ref}) { edges{node{id ref name status summary catalogue {ref}}}  }    variantProducts(catalogue:{ref:$ref}) { edges{node{id ref name status summary catalogue {ref}}}}  }",
+                            "query": "query ($ref: String!) { productCatalogue(ref: $ref) { ref name status description type attributes{name type value}   } standardProducts(catalogue:{ref:$ref}) { edges{node{id ref name status summary catalogue {ref}}}  }    variantProducts(catalogue:{ref:$ref}) { edges{node{id ref name status summary catalogue {ref}}}}  }",
                             "variables": {
                                 "ref": "{{params.ref}}"
                             }
@@ -1387,76 +1387,9 @@
                                     ]
                                 }
                             },
-                            {
-                                "component": "shared.components.material.DynamicList",
-                                "params": {
-                                    "title": "Attributes",
-                                    "defaultPageSize": 5,
-                                    "dataSource": "productCatalogue.attributes",
-                                    "attributes": [
-                                        {
-                                            "label": "Name",
-                                            "template": "{{name}}"
-                                        },
-                                        {
-                                            "label": "Type",
-                                            "template": "{{type}}"
-                                        },
-                                        {
-                                            "label": "Value",
-                                            "template": "{{stringify value}}"
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "component": "shared.components.material.DynamicList",
-                                "params": {
-                                    "title": "categories",
-                                    "graphql": {
-                                        "fragment": "fragment categories on ProductCatalogue{ categories{ edges{ node { ref status summary name }}}}"
-                                    },
-                                    "defaultPageSize": 5,
-                                    "dataSource": "productCatalogue.categories",
-                                    "attributes": [
-                                        {
-                                            "label": "Category ref",
-                                            "template": "{{node.ref}}"
-                                        },
-                                        {
-                                            "label": "Status",
-                                            "template": "{{node.status}}"
-                                        },
-                                        {
-                                            "label": "Summary",
-                                            "template": "{{node.summary}}"
-                                        },
-                                        {
-                                            "label": "Name",
-                                            "template": "{{node.name}}"
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "component": "shared.components.material.DynamicList",
-                                "params": {
-                                    "title": "Products",
-                                    "defaultPageSize": 5,
-                                    "dataSource": "standardProducts",
-                                    "attributes": [
-                                        {
-                                            "label": "Product ref",
-                                            "template": "{{node.ref}}",
-                                            "link_template": "#/standard_product_detail/{{node.catalogue.ref}}/{{node.ref}}"
-                                        },
-                                        {
-                                            "label": "name",
-                                            "template": "{{node.name}}"
-                                        }
-                                    ]
-                                }
-                            },
+
+
+
                             {
                                 "component": "shared.components.material.DynamicList",
                                 "params": {
@@ -1612,74 +1545,92 @@
             "menu": "Stores & Fulfilment",
             "icon": "domain",
             "routes": [
-                {
-                    "path": "locations",
-                    "component": "shared.components.material.DynamicPage",
-                    "menuLabel": "Locations",
-                    "menuIcon": "store",
-                    "params": {
-                        "title": "Locations",
-                        "graphql": {
-                            "query": "query($ref:[String]){ locations(ref:$ref){edges{node{ id ref type status name primaryAddress{ city state } }}}}"
+            {
+                "path": "locations",
+                "component": "shared.components.material.DynamicPage",
+                "menuLabel": "Locations",
+                "menuIcon": "store",
+                "permissions": [
+                    "LOCATION_VIEW",
+                    "NETWORK_VIEW"
+                ],
+                "params": {
+                    "title": "i18n:fc.sf.locations.index.title",
+                    "graphql": {
+                        "query": "query($ref:[String]){ locations(ref:$ref){edges{node{ id ref type status name primaryAddress{ id city state } }}}}"
+                    },
+                    "primaryButtons": [
+                        {
+                            "label": "i18n:fc.sf.locations.index.userAction.createNew",
+                            "mutation": "createLocation"
+                        }
+                    ],
+                    "layouts": [
+                        {
+                            "component": "shared.components.material.DynamicFilter",
+                            "params": {
+                                "label": "Filter orders with ref",
+                                "fields": [
+                                    {
+                                        "field": "ref",
+                                        "label": "i18n:fc.sf.locations.index.filter.field..label"
+                                    }
+                                ]
+                            }
                         },
-                        "primaryButtons": [
-                            {
-                                "label": "Create New",
-                                "mutation": "createLocation"
+                        {
+                            "component": "shared.components.material.DynamicList",
+                            "params": {
+                                "dataSource": "locations",
+                                "attributes": [
+                                    {
+                                        "label": "i18n:fc.sf.locations.index.list.column.id.heading",
+                                        "template": "{{node.id}}",
+                                        "link_template": "#/locations/{{node.id}}/{{node.primaryAddress.id}}"
+                                    },
+                                    {
+                                        "label": "i18n:fc.sf.locations.index.list.column.ref.heading",
+                                        "template": "{{node.ref}}"
+                                    },
+                                    {
+                                        "label": "i18n:fc.sf.locations.index.list.column.name.heading",
+                                        "template": "{{node.name}}"
+                                    },
+                                    {
+                                        "label": "i18n:fc.sf.locations.index.list.column.city.heading",
+                                        "template": "{{node.primaryAddress.city}}"
+                                    },
+                                    {
+                                        "label": "i18n:fc.sf.locations.index.list.column.state.heading",
+                                        "template": "{{node.primaryAddress.state}}"
+                                    },
+                                    {
+                                        "label": "i18n:fc.sf.locations.index.list.column.type.heading",
+                                        "template": "{{node.type}}"
+                                    },
+                                    {
+                                        "label": "i18n:fc.sf.locations.index.list.column.status.heading",
+                                        "template": "{{node.status}}"
+                                    }
+                                ]
                             }
-                        ],
-                        "layouts": [
-                            {
-                                "component": "shared.components.material.DynamicFilter",
-                                "params": {
-                                    "filterable": [
-                                        "ref"
-                                    ],
-                                    "label": "Enter location ref"
-                                }
-                            },
-                            {
-                                "component": "shared.components.material.DynamicList",
-                                "params": {
-                                    "dataSource": "locations",
-                                    "attributes": [
-                                        {
-                                            "label": "Id",
-                                            "template": "{{node.id}}",
-                                            "link_template": "#/locations/{{node.id}}"
-                                        },
-                                        {
-                                            "label": "Ref",
-                                            "template": "{{node.ref}}"
-                                        },
-                                        {
-                                            "label": "Name",
-                                            "template": "{{node.name}}"
-                                        },
-                                        {
-                                            "label": "City",
-                                            "template": "{{node.primaryAddress.city}}"
-                                        },
-                                        {
-                                            "label": "State",
-                                            "template": "{{node.primaryAddress.state}}"
-                                        },
-                                        {
-                                            "label": "type",
-                                            "template": "{{node.type}}"
-                                        },
-                                        {
-                                            "label": "Status",
-                                            "template": "{{node.status}}"
-                                        }
-                                    ]
-                                }
-                            }
-                        ]
-                    }
+                        }
+                    ]
+                }
+            },
+                {
+                    "path": "location/new",
+                    "component": "AdminConsole.editNewLocations",
+                    "highlight": "locations"
                 },
                 {
-                    "path": "locations/:id",
+                    "path": "location/:location_id",
+                    "component": "AdminConsole.editNewLocations",
+                    "highlight": "locations"
+                },
+
+                {
+                    "path": "locations/:id/:addressid",
                     "component": "shared.components.material.DynamicPage",
                     "menuIcon": "store",
                     "permissions": [
@@ -1692,395 +1643,11 @@
                         "backButtons": [
                             {
                                 "path": "locations",
-                                "menuLabel": "Back to Locations"
-                            }
-                        ],
-                        "graphql": {
-                            "query": "query ($id: ID!) { locationById(id: $id) { id ref name type status supportPhoneNumber createdOn openingSchedule {allHours  monEnd  monStart  tueEnd tueStart wedEnd wedStart thuEnd thuStart friEnd friStart satEnd satStart sunEnd sunStart} primaryAddress { id street city state region postcode country longitude latitude timeZone} ...networks ...storageAreas attributes{name, type,value }} } ",
-                            "variables": {
-                                "id": "{{params.id}}"
-                            }
-                        },
-                        "primaryButtons": [
-                            {
-                                "label": "Edit",
-                                "mutation": "updateLocation",
-                                "arguments": {
-                                    "id": "{{id}}"
-                                }
-                            },
-                            {
-                                "label": "Edit Address",
-                                "mutation": "updateStoreAddress",
-                                "arguments": {
-                                    "id": "{{id}}"
-                                }
-                            }
-                        ],
-                        "layouts": [
-                            {
-                                "component": "shared.components.material.MaterialTabsSet",
-                                "params": {
-                                    "layouts": [
-                                        {
-                                            "component": "shared.components.material.SubLayoutContent",
-                                            "label": "Details",
-                                            "params": {
-                                                "layouts": [
-                                                    {
-                                                        "component": "shared.components.material.DynamicCard",
-                                                        "params": {
-                                                            "title": "Summary",
-                                                            "half": true,
-                                                            "dataSource": "locationById",
-                                                            "attributes": [
-                                                                {
-                                                                    "label": "Id",
-                                                                    "template": "{{id}}"
-                                                                },
-                                                                {
-                                                                    "label": "Ref",
-                                                                    "template": "{{ref}}"
-                                                                },
-                                                                {
-                                                                    "label": "Name",
-                                                                    "template": "{{name}}"
-                                                                },
-                                                                {
-                                                                    "label": "Phone",
-                                                                    "template": "{{supportPhoneNumber}}"
-                                                                },
-                                                                {
-                                                                    "label": "Type",
-                                                                    "template": "{{type}}"
-                                                                },
-                                                                {
-                                                                    "label": "Status",
-                                                                    "template": "{{status}}"
-                                                                },
-                                                                {
-                                                                    "label": "Status",
-                                                                    "template": "{{status}}"
-                                                                },
-                                                                {
-                                                                    "label": "Creation Date",
-                                                                    "template": "{{formatDate createdOn day='numeric' month='numeric' year='numeric'}}"
-                                                                }
-                                                            ]
-                                                        }
-                                                    },
-                                                    {
-                                                        "component": "shared.components.material.DynamicCard",
-                                                        "params": {
-                                                            "title": "Address",
-                                                            "half": true,
-                                                            "dataSource": "locationById",
-                                                            "attributes": [
-                                                                {
-                                                                    "label": "Address",
-                                                                    "template": "{{primaryAddress.region}}"
-                                                                },
-                                                                {
-                                                                    "label": "",
-                                                                    "template": "{{primaryAddress.street}}"
-                                                                },
-                                                                {
-                                                                    "label": "",
-                                                                    "template": "{{primaryAddress.city}}"
-                                                                },
-                                                                {
-                                                                    "label": "",
-                                                                    "template": "{{primaryAddress.state}}"
-                                                                },
-                                                                {
-                                                                    "label": "",
-                                                                    "template": "{{primaryAddress.postcode}}"
-                                                                },
-                                                                {
-                                                                    "label": "",
-                                                                    "template": "{{primaryAddress.country}}"
-                                                                },
-                                                                {
-                                                                    "label": "Latitude",
-                                                                    "template": "{{primaryAddress.latitude}}"
-                                                                },
-                                                                {
-                                                                    "label": "Longitude",
-                                                                    "template": "{{primaryAddress.longitude}}"
-                                                                },
-                                                                {
-                                                                    "label": "Timezone",
-                                                                    "template": "{{primaryAddress.timeZone}}"
-                                                                }
-                                                            ]
-                                                        }
-                                                    }
-                                                ]
-                                            }
-                                        },
-                                        {
-                                            "component": "shared.components.material.SubLayoutContent",
-                                            "label": "Networks",
-                                            "params": {
-                                                "layouts": [
-                                                    {
-                                                        "component": "shared.components.material.DynamicList",
-                                                        "params": {
-                                                            "graphql": {
-                                                                "fragment": "fragment networks on Location{ networks{edges{node{ id ref status type }}}} "
-                                                            },
-                                                            "title": "Networks",
-                                                            "half": true,
-                                                            "dataSource": "locationById.networks",
-                                                            "attributes": [
-                                                                {
-                                                                    "label": " Network Id",
-                                                                    "template": "{{node.id}}",
-                                                                    "link_template": "#/networks/{{node.id}}"
-                                                                },
-                                                                {
-                                                                    "label": " Network Ref",
-                                                                    "template": "{{node.ref}}"
-                                                                },
-                                                                {
-                                                                    "label": "Network Type",
-                                                                    "template": "{{node.type}}"
-                                                                },
-                                                                {
-                                                                    "label": "Network Status",
-                                                                    "template": "{{node.status}}"
-                                                                }
-                                                            ]
-                                                        }
-                                                    }
-                                                ]
-                                            }
-                                        },
-                                        {
-                                            "component": "shared.components.material.SubLayoutContent",
-                                            "label": "Storage areas",
-                                            "params": {
-                                                "layouts": [
-                                                    {
-                                                        "component": "shared.components.material.DynamicList",
-                                                        "params": {
-                                                            "graphql": {
-                                                                "fragment": "fragment storageAreas on Location{ storageAreas{ edges { node { id name status type  } } } } "
-                                                            },
-                                                            "title": "Storage Area",
-                                                            "defaultPageSize": 10,
-                                                            "dataSource": "locationById.storageAreas",
-                                                            "attributes": [
-                                                                {
-                                                                    "label": "Storage Area Id",
-                                                                    "template": "{{node.id}}"
-                                                                },
-                                                                {
-                                                                    "label": "Name",
-                                                                    "template": "{{node.name}}"
-                                                                },
-                                                                {
-                                                                    "label": "Status",
-                                                                    "template": "{{node.status}}"
-                                                                },
-                                                                {
-                                                                    "label": "Type",
-                                                                    "template": "{{node.type}}"
-                                                                }
-                                                            ]
-                                                        }
-                                                    }
-                                                ]
-                                            }
-                                        },
-                                        {
-                                            "component": "shared.components.material.SubLayoutContent",
-                                            "label": "Attributes",
-                                            "params": {
-                                                "layouts": [
-                                                    {
-                                                        "component": "shared.components.material.DynamicList",
-                                                        "params": {
-                                                            "title": "Attributes",
-                                                            "half": true,
-                                                            "dataSource": "locationById.attributes",
-                                                            "attributes": [
-                                                                {
-                                                                    "label": " Name",
-                                                                    "template": "{{name}}"
-                                                                },
-                                                                {
-                                                                    "label": " Type",
-                                                                    "template": "{{type}}"
-                                                                },
-                                                                {
-                                                                    "label": "Value",
-                                                                    "template": "{{stringify value}}"
-                                                                }
-                                                            ]
-                                                        }
-                                                    }
-                                                ]
-                                            }
-                                        },
-                                        {
-                                            "component": "shared.components.material.SubLayoutContent",
-                                            "label": "Details",
-                                            "params": {
-                                                "layouts": [
-                                                    {
-                                                        "component": "shared.components.material.DynamicCard",
-                                                        "params": {
-                                                            "title": "Opening Schedule",
-                                                            "half": true,
-                                                            "dataSource": "locationById",
-                                                            "attributes": [
-                                                                {
-                                                                    "label": "Open 24 hours? ",
-                                                                    "template": "{{openingSchedule.allHours}}"
-                                                                },
-                                                                {
-                                                                    "label": "Monday",
-                                                                    "template": "{{openingSchedule.monStart}}  to {{openingSchedule.monEnd}}"
-                                                                },
-                                                                {
-                                                                    "label": "Tuesday",
-                                                                    "template": "{{openingSchedule.tueStart}}  to {{openingSchedule.tueEnd}}"
-                                                                },
-                                                                {
-                                                                    "label": "Wednesday",
-                                                                    "template": "{{openingSchedule.wedStart}}  to {{openingSchedule.wedEnd}}"
-                                                                },
-                                                                {
-                                                                    "label": "Thursday",
-                                                                    "template": "{{openingSchedule.thuStart}}  to {{openingSchedule.thuEnd}}"
-                                                                },
-                                                                {
-                                                                    "label": "Friday",
-                                                                    "template": "{{openingSchedule.friStart}}  to {{openingSchedule.friEnd}}"
-                                                                },
-                                                                {
-                                                                    "label": "Saturday",
-                                                                    "template": "{{openingSchedule.satStart}}  to {{openingSchedule.satEnd}}"
-                                                                },
-                                                                {
-                                                                    "label": "Sunday",
-                                                                    "template": "{{openingSchedule.sunStart}}  to {{openingSchedule.sunEnd}}"
-                                                                }
-                                                            ]
-                                                        }
-                                                    }
-                                                ]
-                                            }
-                                        }
-                                    ]
-                                }
-                            }
-                        ]
-                    }
-                },
-                {
-                    "path": "location/new",
-                    "component": "AdminConsole.editNewLocations",
-                    "highlight": "locations"
-                },
-                {
-                    "path": "location/:location_id",
-                    "component": "AdminConsole.editNewLocations",
-                    "highlight": "locations"
-                },
-                {
-                    "path": "locations2",
-                    "component": "shared.components.material.DynamicPage",
-                    "menuLabel": "Location with Address",
-                    "menuIcon": "store",
-                    "permissions": [
-                        "LOCATION_VIEW",
-                        "NETWORK_VIEW"
-                    ],
-                    "params": {
-                        "title": "i18n:fc.sf.locations.index.title",
-                        "graphql": {
-                            "query": "query($ref:[String]){ locations(ref:$ref){edges{node{ id ref type status name primaryAddress{ id city state } }}}}"
-                        },
-                        "primaryButtons": [
-                            {
-                                "label": "i18n:fc.sf.locations.index.userAction.createNew",
-                                "mutation": "createLocation"
-                            }
-                        ],
-                        "layouts": [
-                            {
-                                "component": "shared.components.material.DynamicFilter",
-                                "params": {
-                                    "label": "i18n:fc.sf.locations.index.filter.placeholder",
-                                    "fields": [
-                                        {
-                                            "field": "ref",
-                                            "label": "i18n:fc.sf.locations.index.filter.field..label"
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "component": "shared.components.material.DynamicList",
-                                "params": {
-                                    "dataSource": "locations",
-                                    "attributes": [
-                                        {
-                                            "label": "i18n:fc.sf.locations.index.list.column.id.heading",
-                                            "template": "{{node.id}}",
-                                            "link_template": "#/locations2/{{node.id}}/{{node.primaryAddress.id}}"
-                                        },
-                                        {
-                                            "label": "i18n:fc.sf.locations.index.list.column.ref.heading",
-                                            "template": "{{node.ref}}"
-                                        },
-                                        {
-                                            "label": "i18n:fc.sf.locations.index.list.column.name.heading",
-                                            "template": "{{node.name}}"
-                                        },
-                                        {
-                                            "label": "i18n:fc.sf.locations.index.list.column.city.heading",
-                                            "template": "{{node.primaryAddress.city}}"
-                                        },
-                                        {
-                                            "label": "i18n:fc.sf.locations.index.list.column.state.heading",
-                                            "template": "{{node.primaryAddress.state}}"
-                                        },
-                                        {
-                                            "label": "i18n:fc.sf.locations.index.list.column.type.heading",
-                                            "template": "{{node.type}}"
-                                        },
-                                        {
-                                            "label": "i18n:fc.sf.locations.index.list.column.status.heading",
-                                            "template": "{{node.status}}"
-                                        }
-                                    ]
-                                }
-                            }
-                        ]
-                    }
-                },
-                {
-                    "path": "locations2/:id/:addressid",
-                    "component": "shared.components.material.DynamicPage",
-                    "menuIcon": "store",
-                    "permissions": [
-                        "LOCATION_VIEW",
-                        "NETWORK_VIEW"
-                    ],
-                    "params": {
-                        "title": "i18n:fc.sf.locations.detail.title",
-                        "showUserActions": true,
-                        "backButtons": [
-                            {
-                                "path": "locations2",
                                 "menuLabel": "i18n:fc.sf.locations.detail.breadcrumb.backToLocations"
                             }
                         ],
                         "graphql": {
-                            "query": "query ($id: ID!) { locationById(id: $id) { id ref name type status supportPhoneNumber createdOn openingSchedule {allHours  monEnd  monStart  tueEnd tueStart wedEnd wedStart thuEnd thuStart friEnd friStart satEnd satStart sunEnd sunStart} primaryAddress { id street city state postcode country longitude latitude timeZone} ...networks ...storageAreas attributes{name, type,value }} } ",
+                            "query": "query ($id: ID!) { locationById(id: $id) { id ref name type status supportPhoneNumber createdOn openingSchedule {allHours  monEnd  monStart  tueEnd tueStart wedEnd wedStart thuEnd thuStart friEnd friStart satEnd satStart sunEnd sunStart} primaryAddress { id street city state postcode country longitude latitude timeZone} ...networks attributes{name, type,value }} } ",
                             "variables": {
                                 "id": "{{params.id}}"
                             }
@@ -2246,43 +1813,7 @@
                                                 ]
                                             }
                                         },
-                                        {
-                                            "component": "shared.components.material.SubLayoutContent",
-                                            "label": "i18n:fc.sf.locations.detail.tab.storageAreas.label",
-                                            "params": {
-                                                "layouts": [
-                                                    {
-                                                        "component": "shared.components.material.DynamicList",
-                                                        "params": {
-                                                            "graphql": {
-                                                                "fragment": "fragment storageAreas on Location{ storageAreas{ edges { node { id name status type  } } } } "
-                                                            },
-                                                            "title": "i18n:fc.sf.locations.detail.list.storageArea.title",
-                                                            "defaultPageSize": 10,
-                                                            "dataSource": "locationById.storageAreas",
-                                                            "attributes": [
-                                                                {
-                                                                    "label": "i18n:fc.sf.locations.detail.list.storageArea.column.storageAreaId.heading",
-                                                                    "template": "{{node.id}}"
-                                                                },
-                                                                {
-                                                                    "label": "i18n:fc.sf.locations.detail.list.storageArea.column.name.heading",
-                                                                    "template": "{{node.name}}"
-                                                                },
-                                                                {
-                                                                    "label": "i18n:fc.sf.locations.detail.list.storageArea.column.status.heading",
-                                                                    "template": "{{node.status}}"
-                                                                },
-                                                                {
-                                                                    "label": "i18n:fc.sf.locations.detail.list.storageArea.column.type.heading",
-                                                                    "template": "{{node.type}}"
-                                                                }
-                                                            ]
-                                                        }
-                                                    }
-                                                ]
-                                            }
-                                        },
+
                                         {
                                             "component": "shared.components.material.SubLayoutContent",
                                             "label": "i18n:fc.sf.locations.detail.tab.attributes.label",
@@ -2315,7 +1846,7 @@
                                         },
                                         {
                                             "component": "shared.components.material.SubLayoutContent",
-                                            "label": "i18n:fc.sf.locations.detail.tab.details.label",
+                                            "label": "Schedule",
                                             "params": {
                                                 "layouts": [
                                                     {

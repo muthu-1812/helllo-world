@@ -1,0 +1,367 @@
+{
+    "path": "locations",
+    "component": "shared.components.material.DynamicPage",
+    "menuLabel": "Locations",
+    "menuIcon": "store",
+    "params": {
+        "title": "Locations",
+        "graphql": {
+            "query": "query($ref:[String]){ locations(ref:$ref){edges{node{ id ref type status name primaryAddress{ city state } }}}}"
+        },
+        "primaryButtons": [
+            {
+                "label": "Create New",
+                "mutation": "createLocation"
+            }
+        ],
+        "layouts": [
+            {
+                "component": "shared.components.material.DynamicFilter",
+                "params": {
+                    "filterable": [
+                        "ref"
+                    ],
+                    "label": "Enter location ref"
+                }
+            },
+            {
+                "component": "shared.components.material.DynamicList",
+                "params": {
+                    "dataSource": "locations",
+                    "attributes": [
+                        {
+                            "label": "Id",
+                            "template": "{{node.id}}",
+                            "link_template": "#/locations/{{node.id}}"
+                        },
+                        {
+                            "label": "Ref",
+                            "template": "{{node.ref}}"
+                        },
+                        {
+                            "label": "Name",
+                            "template": "{{node.name}}"
+                        },
+                        {
+                            "label": "City",
+                            "template": "{{node.primaryAddress.city}}"
+                        },
+                        {
+                            "label": "State",
+                            "template": "{{node.primaryAddress.state}}"
+                        },
+                        {
+                            "label": "type",
+                            "template": "{{node.type}}"
+                        },
+                        {
+                            "label": "Status",
+                            "template": "{{node.status}}"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+},
+{
+    "path": "locations/:id",
+    "component": "shared.components.material.DynamicPage",
+    "menuIcon": "store",
+    "permissions": [
+        "LOCATION_VIEW",
+        "NETWORK_VIEW"
+    ],
+    "params": {
+        "title": "Location {{locationById.ref}}",
+        "showUserActions": true,
+        "backButtons": [
+            {
+                "path": "locations",
+                "menuLabel": "Back to Locations"
+            }
+        ],
+        "graphql": {
+            "query": "query ($id: ID!) { locationById(id: $id) { id ref name type status supportPhoneNumber createdOn openingSchedule {allHours  monEnd  monStart  tueEnd tueStart wedEnd wedStart thuEnd thuStart friEnd friStart satEnd satStart sunEnd sunStart} primaryAddress { id street city state region postcode country longitude latitude timeZone} ...networks ...storageAreas attributes{name, type,value }} } ",
+            "variables": {
+                "id": "{{params.id}}"
+            }
+        },
+        "primaryButtons": [
+            {
+                "label": "Edit",
+                "mutation": "updateLocation",
+                "arguments": {
+                    "id": "{{id}}"
+                }
+            },
+            {
+                "label": "Edit Address",
+                "mutation": "updateStoreAddress",
+                "arguments": {
+                    "id": "{{id}}"
+                }
+            }
+        ],
+        "layouts": [
+            {
+                "component": "shared.components.material.MaterialTabsSet",
+                "params": {
+                    "layouts": [
+                        {
+                            "component": "shared.components.material.SubLayoutContent",
+                            "label": "Details",
+                            "params": {
+                                "layouts": [
+                                    {
+                                        "component": "shared.components.material.DynamicCard",
+                                        "params": {
+                                            "title": "Summary",
+                                            "half": true,
+                                            "dataSource": "locationById",
+                                            "attributes": [
+                                                {
+                                                    "label": "Id",
+                                                    "template": "{{id}}"
+                                                },
+                                                {
+                                                    "label": "Ref",
+                                                    "template": "{{ref}}"
+                                                },
+                                                {
+                                                    "label": "Name",
+                                                    "template": "{{name}}"
+                                                },
+                                                {
+                                                    "label": "Phone",
+                                                    "template": "{{supportPhoneNumber}}"
+                                                },
+                                                {
+                                                    "label": "Type",
+                                                    "template": "{{type}}"
+                                                },
+                                                {
+                                                    "label": "Status",
+                                                    "template": "{{status}}"
+                                                },
+                                                {
+                                                    "label": "Status",
+                                                    "template": "{{status}}"
+                                                },
+                                                {
+                                                    "label": "Creation Date",
+                                                    "template": "{{formatDate createdOn day='numeric' month='numeric' year='numeric'}}"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "component": "shared.components.material.DynamicCard",
+                                        "params": {
+                                            "title": "Address",
+                                            "half": true,
+                                            "dataSource": "locationById",
+                                            "attributes": [
+                                                {
+                                                    "label": "Address",
+                                                    "template": "{{primaryAddress.region}}"
+                                                },
+                                                {
+                                                    "label": "",
+                                                    "template": "{{primaryAddress.street}}"
+                                                },
+                                                {
+                                                    "label": "",
+                                                    "template": "{{primaryAddress.city}}"
+                                                },
+                                                {
+                                                    "label": "",
+                                                    "template": "{{primaryAddress.state}}"
+                                                },
+                                                {
+                                                    "label": "",
+                                                    "template": "{{primaryAddress.postcode}}"
+                                                },
+                                                {
+                                                    "label": "",
+                                                    "template": "{{primaryAddress.country}}"
+                                                },
+                                                {
+                                                    "label": "Latitude",
+                                                    "template": "{{primaryAddress.latitude}}"
+                                                },
+                                                {
+                                                    "label": "Longitude",
+                                                    "template": "{{primaryAddress.longitude}}"
+                                                },
+                                                {
+                                                    "label": "Timezone",
+                                                    "template": "{{primaryAddress.timeZone}}"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "component": "shared.components.material.SubLayoutContent",
+                            "label": "Networks",
+                            "params": {
+                                "layouts": [
+                                    {
+                                        "component": "shared.components.material.DynamicList",
+                                        "params": {
+                                            "graphql": {
+                                                "fragment": "fragment networks on Location{ networks{edges{node{ id ref status type }}}} "
+                                            },
+                                            "title": "Networks",
+                                            "half": true,
+                                            "dataSource": "locationById.networks",
+                                            "attributes": [
+                                                {
+                                                    "label": " Network Id",
+                                                    "template": "{{node.id}}",
+                                                    "link_template": "#/networks/{{node.id}}"
+                                                },
+                                                {
+                                                    "label": " Network Ref",
+                                                    "template": "{{node.ref}}"
+                                                },
+                                                {
+                                                    "label": "Network Type",
+                                                    "template": "{{node.type}}"
+                                                },
+                                                {
+                                                    "label": "Network Status",
+                                                    "template": "{{node.status}}"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "component": "shared.components.material.SubLayoutContent",
+                            "label": "Storage areas",
+                            "params": {
+                                "layouts": [
+                                    {
+                                        "component": "shared.components.material.DynamicList",
+                                        "params": {
+                                            "graphql": {
+                                                "fragment": "fragment storageAreas on Location{ storageAreas{ edges { node { id name status type  } } } } "
+                                            },
+                                            "title": "Storage Area",
+                                            "defaultPageSize": 10,
+                                            "dataSource": "locationById.storageAreas",
+                                            "attributes": [
+                                                {
+                                                    "label": "Storage Area Id",
+                                                    "template": "{{node.id}}"
+                                                },
+                                                {
+                                                    "label": "Name",
+                                                    "template": "{{node.name}}"
+                                                },
+                                                {
+                                                    "label": "Status",
+                                                    "template": "{{node.status}}"
+                                                },
+                                                {
+                                                    "label": "Type",
+                                                    "template": "{{node.type}}"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "component": "shared.components.material.SubLayoutContent",
+                            "label": "Attributes",
+                            "params": {
+                                "layouts": [
+                                    {
+                                        "component": "shared.components.material.DynamicList",
+                                        "params": {
+                                            "title": "Attributes",
+                                            "half": true,
+                                            "dataSource": "locationById.attributes",
+                                            "attributes": [
+                                                {
+                                                    "label": " Name",
+                                                    "template": "{{name}}"
+                                                },
+                                                {
+                                                    "label": " Type",
+                                                    "template": "{{type}}"
+                                                },
+                                                {
+                                                    "label": "Value",
+                                                    "template": "{{stringify value}}"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "component": "shared.components.material.SubLayoutContent",
+                            "label": "Details",
+                            "params": {
+                                "layouts": [
+                                    {
+                                        "component": "shared.components.material.DynamicCard",
+                                        "params": {
+                                            "title": "Opening Schedule",
+                                            "half": true,
+                                            "dataSource": "locationById",
+                                            "attributes": [
+                                                {
+                                                    "label": "Open 24 hours? ",
+                                                    "template": "{{openingSchedule.allHours}}"
+                                                },
+                                                {
+                                                    "label": "Monday",
+                                                    "template": "{{openingSchedule.monStart}}  to {{openingSchedule.monEnd}}"
+                                                },
+                                                {
+                                                    "label": "Tuesday",
+                                                    "template": "{{openingSchedule.tueStart}}  to {{openingSchedule.tueEnd}}"
+                                                },
+                                                {
+                                                    "label": "Wednesday",
+                                                    "template": "{{openingSchedule.wedStart}}  to {{openingSchedule.wedEnd}}"
+                                                },
+                                                {
+                                                    "label": "Thursday",
+                                                    "template": "{{openingSchedule.thuStart}}  to {{openingSchedule.thuEnd}}"
+                                                },
+                                                {
+                                                    "label": "Friday",
+                                                    "template": "{{openingSchedule.friStart}}  to {{openingSchedule.friEnd}}"
+                                                },
+                                                {
+                                                    "label": "Saturday",
+                                                    "template": "{{openingSchedule.satStart}}  to {{openingSchedule.satEnd}}"
+                                                },
+                                                {
+                                                    "label": "Sunday",
+                                                    "template": "{{openingSchedule.sunStart}}  to {{openingSchedule.sunEnd}}"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+},
