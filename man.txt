@@ -954,10 +954,9 @@
                                 "params": {
                                     "filterable": {
                                         "Fulfilment ref": "fulfilmentRef",
-                                        "Fulfilment Status": "status",
-                                        "ETA": "eta"
+                                        "Fulfilment Status": "status"
                                     },
-                                    "label": "Filter fulfilments on ref, status, eta"
+                                    "label": "Filter fulfilments on ref and status"
                                 }
                             },
                             {
@@ -996,10 +995,7 @@
                                             "label": "From Location",
                                             "template": "{{node.fromLocation.ref}}"
                                         },
-                                        {
-                                            "label": "ETA",
-                                            "template": "{{node.eta}}"
-                                        },
+
                                         {
                                             "label": "Creation Date",
                                             "template": "{{dateStringFormatter node.createdOn}} ({{formatRelative node.createdOn commentDate}})"
@@ -1069,98 +1065,7 @@
                         ]
                     }
                 },
-                {
-                    "path": "customers/:id",
-                    "component": "shared.components.material.DynamicPage",
-                    "menuIcon": "shopping_cart",
-                    "params": {
-                        "title": "Customer Details - {{customerById.firstName}} {{customerById.lastName}}",
-                        "backButtons": [
-                            {
-                                "path": "customers",
-                                "menuLabel": "Back to Customers "
-                            }
-                        ],
-                        "graphql": {
-                            "query": "query ($id: ID!) { customerById(id: $id) {id ref firstName lastName username  primaryEmail primaryPhone status retailer {id tradingName} country department createdOn updatedOn} } ",
-                            "variables": {
-                                "id": "{{params.id}}"
-                            }
-                        },
-                        "layouts": [
-                            {
-                                "component": "shared.components.material.DynamicCard",
-                                "params": {
-                                    "title": "Personal information",
-                                    "half": true,
-                                    "dataSource": "customerById",
-                                    "attributes": [
-                                        {
-                                            "label": "Name",
-                                            "template": "{{firstName}} {{lastName}}"
-                                        },
-                                        {
-                                            "label": "Primary Phone",
-                                            "template": "{{primaryPhone}}"
-                                        },
-                                        {
-                                            "label": "Primary Email",
-                                            "template": "{{primaryEmail}}"
-                                        },
-                                        {
-                                            "label": "Country",
-                                            "template": "{{country}}"
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "component": "shared.components.material.DynamicCard",
-                                "params": {
-                                    "title": "Account Details",
-                                    "half": true,
-                                    "dataSource": "customerById",
-                                    "attributes": [
-                                        {
-                                            "label": "id",
-                                            "template": "{{id}}"
-                                        },
-                                        {
-                                            "label": "Created On",
-                                            "template": "{{formatDate createdOn day='numeric' month='numeric' year='numeric'}}"
-                                        },
-                                        {
-                                            "label": "Updated On",
-                                            "template": "{{formatDate updateddOn day='numeric' month='numeric' year='numeric'}}"
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "component": "shared.components.material.DynamicCard",
-                                "params": {
-                                    "title": "Retailer information",
-                                    "half": true,
-                                    "dataSource": "customerById",
-                                    "attributes": [
-                                        {
-                                            "label": "Department",
-                                            "template": "{{department}}"
-                                        },
-                                        {
-                                            "label": "Retailer ",
-                                            "template": "{{retailer.tradingName}}"
-                                        },
-                                        {
-                                            "label": "Retailer ID",
-                                            "template": "{{retailer.id}}"
-                                        }
-                                    ]
-                                }
-                            }
-                        ]
-                    }
-                },
+
                 {
                     "path": "customers/:id/orders/:ref",
                     "component": "shared.components.material.DynamicPage",
